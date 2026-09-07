@@ -1,0 +1,32 @@
+kind = "web"
+previewPath = "/"
+title = "Free Fire API"
+description = "A publishable Free Fire profile, statistics, search, and image API service."
+version = "1.0.0"
+id = "artifacts/free-fire-api"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25600
+
+[services.development]
+run = "pnpm --filter @workspace/free-fire-api run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/free-fire-api", "run", "build" ]
+
+[services.production.run]
+args = [ "sh", "-c", "cd artifacts/free-fire-api && exec .venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port ${PORT:-8080}" ]
+
+[services.production.run.env]
+PORT = "25600"
+NODE_ENV = "production"
+
+[services.production.health.startup]
+path = "/healthz"
+
+[services.env]
+PORT = "25600"
+BASE_PATH = "/"
